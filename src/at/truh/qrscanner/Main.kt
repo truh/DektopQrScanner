@@ -8,9 +8,7 @@ import boofcv.io.image.ConvertBufferedImage
 import boofcv.struct.image.GrayU8
 import java.awt.*
 import java.awt.image.BufferedImage
-import javax.imageio.ImageIO
 import javax.swing.*
-import kotlin.math.max
 
 
 fun createScreenShot(screenRectangle: Rectangle? = null): BufferedImage {
@@ -55,39 +53,6 @@ fun renderQrCodes(image: BufferedImage, detector: QrCodeDetector<GrayU8>): Buffe
     }
 
     return image
-}
-
-class RenderPane() : JPanel() {
-    var renderImage: BufferedImage? = null
-    override fun paint(g: Graphics){
-        super.paint(g)
-
-        if (this.renderImage != null) {
-            val renderImage = this.renderImage!!
-            val containerAspectRatio: Double = width.toDouble() / height.toDouble()
-            val imageAspectRatio: Double = renderImage.width.toDouble() / renderImage.height.toDouble()
-
-            val (imgWidth: Int, imgHeight: Int) =  if (containerAspectRatio > imageAspectRatio) {
-                val imgHeight = height
-                val imgWidth = renderImage.width.toDouble() * imgHeight / renderImage.height
-                Pair(imgWidth.toInt(), imgHeight)
-            } else {
-                val imgWidth = width
-                val imgHeight = renderImage.height.toDouble() * imgWidth / renderImage.width
-                Pair(imgWidth, imgHeight.toInt())
-            }
-
-            val (imgX: Int, imgY: Int) = if (containerAspectRatio > imageAspectRatio) {
-                val xOffset = (width - imgWidth) / 2
-                Pair(xOffset, 0)
-            } else {
-                val yOffset = (height - imgHeight) / 2
-                Pair(0, yOffset)
-            }
-
-            g.drawImage(renderImage, imgX, imgY, imgWidth, imgHeight, null)
-        }
-    }
 }
 
 class MainPanel(val setWindowVisible: (Boolean) -> Unit) : JPanel(BorderLayout()) {
@@ -138,7 +103,7 @@ class MainPanel(val setWindowVisible: (Boolean) -> Unit) : JPanel(BorderLayout()
             textArea.append(qrCode.message)
             textArea.append("\n")
         }
-        renderPane.renderImage = renderQrCodes(screenShot, detector)
+        renderPane.image = renderQrCodes(screenShot, detector)
     }
 }
 
