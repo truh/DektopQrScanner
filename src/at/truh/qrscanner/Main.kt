@@ -28,48 +28,57 @@ fun detectQrCodes(image: BufferedImage): List<QrCode> {
     return detector.detections
 }
 
-fun renderQrCodes(image: BufferedImage, qrCodes: List<QrCode>) {
+fun renderQrCodes(image: BufferedImage, qrCodes: List<QrCode>): BufferedImage {
     println("QrCodes (${qrCodes.size}):")
     qrCodes.forEach { qrCode: QrCode ->
         println(qrCode.message)
     }
+    return image
 }
 
-class MainPanel(setWindowVisible: (Boolean) -> Unit) : JPanel(BorderLayout()) {
+class MainPanel(val setWindowVisible: (Boolean) -> Unit) : JPanel(BorderLayout()) {
     private val qrCodeValues: ArrayList<String> = ArrayList<String>()
     private var renderedImage: BufferedImage? = null
 
     init {
         val toolBar = JToolBar()
         toolBar.isFloatable = false
-        val scanAreaButton = JButton("Select Area").apply {
-            toolTipText = "Select Area"
+        val scanAreaButton = JButton().apply {
+            text = "Select Area"
+            toolTipText = text
             addActionListener {
-                println("Select Area")
-                setWindowVisible(false)
-                val rectangle = selectArea()
-                val screenShot = createScreenShot(rectangle)
-                setWindowVisible(true)
-                val qrCodes = detectQrCodes(screenShot)
-                renderQrCodes(screenShot, qrCodes)
+                println(text)
+                screenshotAndDetectQrCodes(true)
             }
         }
-//        toolBar.add(scanAreaButton)
+        toolBar.add(scanAreaButton)
 
-        val scanScreenButton = JButton("Entire Screen").apply {
-            toolTipText = "Entire Screen"
+        val scanScreenButton = JButton().apply {
+            text = "Entire Screen"
+            toolTipText = text
             addActionListener {
-                println("Entire Screen")
-                setWindowVisible(false)
-                val screenShot = createScreenShot()
-                setWindowVisible(true)
-                val qrCodes = detectQrCodes(screenShot)
-                renderQrCodes(screenShot, qrCodes)
+                println(toolTipText)
+                screenshotAndDetectQrCodes(false)
             }
         }
         toolBar.add(scanScreenButton)
 
         add(toolBar, BorderLayout.PAGE_START)
+    }
+
+    private fun screenshotAndDetectQrCodes(shouldSelectArea: Boolean) {
+        setWindowVisible(false)
+
+        val rectangle = if (shouldSelectArea) selectArea() else null
+        val screenShot = createScreenShot(rectangle)
+
+        setWindowVisible(true)
+
+        val qrCodes = detectQrCodes(screenShot)
+        qrCodes.forEach { qrCode: QrCode ->
+            qrCodeValues.add(qrCode.message)
+        }
+        renderedImage = renderQrCodes(screenShot, qrCodes)
     }
 }
 
