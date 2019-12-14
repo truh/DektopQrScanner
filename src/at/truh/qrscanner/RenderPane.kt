@@ -16,30 +16,23 @@ class RenderPane(var image: BufferedImage? = null) : JPanel() {
 
         if (this.image != null) {
             // local copy of reference so it can't be overwritten while rendering
-            val image = this.image!!
+            val imageLocal = this.image!!
 
-            val containerAspectRatio: Double = width.toDouble() / height.toDouble()
-            val imageAspectRatio: Double = image.width.toDouble() / image.height.toDouble()
+            val containerAspectRatio: Double = this.width.toDouble() / this.height.toDouble()
+            val imageAspectRatio: Double = imageLocal.width.toDouble() / imageLocal.height.toDouble()
 
             val (imgWidth: Int, imgHeight: Int) =  if (containerAspectRatio > imageAspectRatio) {
-                val imgHeight = height
-                val imgWidth = image.width.toDouble() * imgHeight / image.height
-                Pair(imgWidth.toInt(), imgHeight)
+                val imgWidth = imageLocal.width * this.height / imageLocal.height
+                Pair(imgWidth, this.height)
             } else {
-                val imgWidth = width
-                val imgHeight = image.height.toDouble() * imgWidth / image.width
-                Pair(imgWidth, imgHeight.toInt())
+                val imgHeight = imageLocal.height * this.width / imageLocal.width
+                Pair(this.width, imgHeight)
             }
 
-            val (imgX: Int, imgY: Int) = if (containerAspectRatio > imageAspectRatio) {
-                val xOffset = (width - imgWidth) / 2
-                Pair(xOffset, 0)
-            } else {
-                val yOffset = (height - imgHeight) / 2
-                Pair(0, yOffset)
-            }
+            val imgX = (this.width - imgWidth) / 2
+            val imgY = (this.height - imgHeight) / 2
 
-            g.drawImage(image, imgX, imgY, imgWidth, imgHeight, null)
+            g.drawImage(imageLocal, imgX, imgY, imgWidth, imgHeight, null)
         }
     }
 }
