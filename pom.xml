@@ -10,7 +10,7 @@
         <main.class>at.truh.qrscanner.MainKt</main.class>
 
         <kotlin.version>1.6.0</kotlin.version>
-        <boofcv.version>0.34</boofcv.version>
+        <boofcv.version>0.43.1</boofcv.version>
         <jnativehook.version>2.1.0</jnativehook.version>
     </properties>
 
